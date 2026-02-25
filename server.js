@@ -29,7 +29,7 @@ mongoose
   .then(() => {
     console.log("✅ MongoDB terhubung!");
     app.listen(process.env.PORT, () => {
-      console.log(`🚀 Server berjalan di http://localhost:${process.env.PORT}`);
+      console.log(`🚀 Server berjalan di ${process.env.PORT}`);
     });
   })
   .catch((err) => console.error("❌ Gagal koneksi MongoDB:", err.message));
