@@ -33,6 +33,7 @@ mongoose
       console.log(`🚀 Server berjalan di port ${PORT}`);
     });
   })
+
   .catch((err) => {
     console.error("❌ Gagal koneksi MongoDB:", err.message);
     process.exit(1);
