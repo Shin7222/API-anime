@@ -43,7 +43,6 @@ npm install
 4️⃣ Jalankan server
 
 npm run dev
-atau
 node server.js
 
 📂 Struktur Folder
