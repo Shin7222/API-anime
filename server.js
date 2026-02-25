@@ -28,8 +28,12 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB terhubung!");
-    app.listen(process.env.PORT, () => {
+
+    const PORT = process.env.PORT || 300;
+
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`🚀 Server berjalan di ${process.env.PORT}`);
     });
   })
   .catch((err) => console.error("❌ Gagal koneksi MongoDB:", err.message));
+process.exit(1);
