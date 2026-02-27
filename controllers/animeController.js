@@ -56,7 +56,14 @@ exports.getAnimeById = async (req, res) => {
 // POST tambah anime baru
 exports.createAnime = async (req, res) => {
   try {
-    const anime = await Anime.create(req.body);
+    const animeData = { ...req.body };
+    if (req.file) {
+      animeData.poster = {
+        url: req.file.path,
+        public_id: req.file.filename,
+      };
+    }
+    const anime = await Anime.create(animeData);
     res.status(201).json({ success: true, data: anime });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -66,7 +73,14 @@ exports.createAnime = async (req, res) => {
 // PUT update anime
 exports.updateAnime = async (req, res) => {
   try {
-    const anime = await Anime.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    if (req.file) {
+      updateData.poster = {
+        url: req.file.path,
+        public_id: req.file.filename,
+      };
+    }
+    const anime = await Anime.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });

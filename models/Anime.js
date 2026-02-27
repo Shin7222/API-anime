@@ -21,6 +21,10 @@ const animeSchema = new mongoose.Schema(
     synopsis: String,
     studio: String,
     year: Number,
+    poster: {
+      url: { type: String, default: null },
+      public_id: { type: String, default: null },
+    },
   },
   { timestamps: true }
 );

@@ -1,7 +1,6 @@
 const validate = function (req, res, next) {
   const { username, email, password } = req.body;
 
-  // Cek field kosong
   if (!username || !email || !password) {
     return res.status(400).json({
       success: false,
@@ -9,7 +8,6 @@ const validate = function (req, res, next) {
     });
   }
 
-  // Cek format email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({
@@ -18,7 +16,6 @@ const validate = function (req, res, next) {
     });
   }
 
-  // Cek panjang password
   if (password.length < 6) {
     return res.status(400).json({
       success: false,
@@ -26,7 +23,6 @@ const validate = function (req, res, next) {
     });
   }
 
-  // Cek panjang username
   if (username.length < 3) {
     return res.status(400).json({
       success: false,
@@ -34,7 +30,6 @@ const validate = function (req, res, next) {
     });
   }
 
-  // Cek username tidak mengandung spasi
   if (/\s/.test(username)) {
     return res.status(400).json({
       success: false,

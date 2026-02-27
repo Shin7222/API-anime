@@ -11,6 +11,7 @@ app.use(express.json());
 // Routes
 app.use("/api/anime", require("./routes/anime"));
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/episodes", require("./routes/episode")); // ← tambahkan ini
 
 // 404 handler
 app.use(function (req, res) {
@@ -33,7 +34,6 @@ mongoose
       console.log(`🚀 Server berjalan di port ${PORT}`);
     });
   })
-
   .catch((err) => {
     console.error("❌ Gagal koneksi MongoDB:", err.message);
     process.exit(1);

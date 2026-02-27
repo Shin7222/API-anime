@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-// Generate token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
@@ -74,4 +73,38 @@ exports.login = async (req, res) => {
 // GET profile
 exports.getMe = async (req, res) => {
   res.json({ success: true, data: req.user });
+};
+
+// UPDATE role (admin only)
+exports.updateRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Role tidak valid, pilih user atau admin",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User tidak ditemukan" });
+    }
+
+    res.json({
+      success: true,
+      message: `Role berhasil diubah menjadi ${role}`,
+      data: user,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };

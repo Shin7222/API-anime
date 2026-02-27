@@ -28,4 +28,15 @@ const protect = async function (req, res, next) {
   }
 };
 
-module.exports = { protect };
+const adminOnly = function (req, res, next) {
+  if (req.user && req.user.role === "admin") {
+    next();
+  } else {
+    res.status(403).json({
+      success: false,
+      message: "Akses ditolak, hanya admin yang bisa melakukan ini",
+    });
+  }
+};
+
+module.exports = { protect, adminOnly };
