@@ -1,0 +1,1853 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anime Admin Panel</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #080808;
+        --surface: #111;
+        --card: #161616;
+        --border: #222;
+        --accent: #00ff87;
+        --accent2: #60efff;
+        --red: #ff4d6d;
+        --orange: #ff9a3c;
+        --yellow: #ffe66d;
+        --text: #eee;
+        --muted: #555;
+        --sidebar-w: 240px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Syne", sans-serif;
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* ===== LOGIN ===== */
+      #loginScreen {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        flex-direction: column;
+      }
+
+      .login-box {
+        width: 100%;
+        max-width: 380px;
+        padding: 0 24px;
+      }
+
+      .login-logo {
+        font-size: 13px;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .login-title {
+        font-size: 40px;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 40px;
+      }
+
+      .login-title span {
+        color: var(--accent);
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+        font-family: "Fira Code", monospace;
+      }
+
+      .field input {
+        width: 100%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 12px 16px;
+        font-family: "Syne", sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .field input:focus {
+        border-color: var(--accent);
+      }
+
+      .login-err {
+        font-size: 12px;
+        color: var(--red);
+        margin-bottom: 12px;
+        display: none;
+        font-family: "Fira Code", monospace;
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 14px;
+        background: var(--accent);
+        color: #000;
+        border: none;
+        font-family: "Syne", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        margin-top: 8px;
+      }
+
+      .btn-login:hover {
+        opacity: 0.85;
+      }
+
+      /* ===== LAYOUT ===== */
+      #app {
+        display: none;
+        width: 100%;
+      }
+      #app.show {
+        display: flex;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sidebar-w);
+        min-height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        transition: transform 0.3s;
+      }
+
+      .sidebar-logo {
+        padding: 24px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sidebar-logo-text {
+        font-size: 11px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-family: "Fira Code", monospace;
+      }
+
+      .sidebar-logo-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin-top: 4px;
+      }
+
+      .sidebar-user {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: var(--accent);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+
+      .user-name {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .user-role {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-family: "Fira Code", monospace;
+      }
+
+      nav {
+        flex: 1;
+        padding: 16px 0;
+      }
+
+      .nav-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 8px 20px 4px;
+        font-family: "Fira Code", monospace;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        transition: all 0.2s;
+        border-left: 2px solid transparent;
+      }
+
+      .nav-item:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .nav-item.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: rgba(0, 255, 135, 0.05);
+      }
+      .nav-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .sidebar-footer {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border);
+      }
+
+      .btn-logout {
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+      }
+
+      .btn-logout:hover {
+        border-color: var(--red);
+        color: var(--red);
+      }
+
+      /* MAIN */
+      .main {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* TOPBAR */
+      .topbar {
+        height: 56px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        background: var(--surface);
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+
+      .topbar-title {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text);
+        font-size: 20px;
+        cursor: pointer;
+        padding: 4px;
+      }
+
+      .content {
+        padding: 24px;
+        flex: 1;
+      }
+
+      /* SECTION */
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+
+      /* STATS */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+      }
+
+      .stat-card.c1::before {
+        background: var(--accent);
+      }
+      .stat-card.c2::before {
+        background: var(--accent2);
+      }
+      .stat-card.c3::before {
+        background: var(--orange);
+      }
+      .stat-card.c4::before {
+        background: var(--red);
+      }
+
+      .stat-val {
+        font-size: 36px;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+
+      .stat-card.c1 .stat-val {
+        color: var(--accent);
+      }
+      .stat-card.c2 .stat-val {
+        color: var(--accent2);
+      }
+      .stat-card.c3 .stat-val {
+        color: var(--orange);
+      }
+      .stat-card.c4 .stat-val {
+        color: var(--red);
+      }
+
+      .stat-label {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: "Fira Code", monospace;
+      }
+
+      /* TOOLBAR */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-left {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        flex: 1;
+      }
+
+      .search-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 14px;
+        font-family: "Syne", sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 220px;
+      }
+
+      .search-box:focus {
+        border-color: var(--accent);
+      }
+
+      select.search-box {
+        cursor: pointer;
+      }
+
+      .btn {
+        padding: 8px 18px;
+        border: none;
+        cursor: pointer;
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .btn-accent {
+        background: var(--accent);
+        color: #000;
+      }
+      .btn-accent:hover {
+        opacity: 0.85;
+      }
+      .btn-danger {
+        background: var(--red);
+        color: #fff;
+      }
+      .btn-danger:hover {
+        opacity: 0.85;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        border-color: var(--text);
+        color: var(--text);
+      }
+      .btn-sm {
+        padding: 5px 12px;
+        font-size: 11px;
+      }
+      .btn-blue {
+        background: var(--accent2);
+        color: #000;
+      }
+      .btn-blue:hover {
+        opacity: 0.85;
+      }
+
+      /* TABLE */
+      .table-wrap {
+        background: var(--card);
+        border: 1px solid var(--border);
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      thead tr {
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: "Fira Code", monospace;
+        white-space: nowrap;
+      }
+
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .td-poster {
+        width: 40px;
+        height: 54px;
+        object-fit: cover;
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 10px;
+        flex-shrink: 0;
+      }
+
+      .td-poster img {
+        width: 40px;
+        height: 54px;
+        object-fit: cover;
+      }
+
+      .anime-row-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .anime-row-title {
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .anime-row-meta {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+        font-family: "Fira Code", monospace;
+      }
+
+      .badge {
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        font-weight: 700;
+        display: inline-block;
+        white-space: nowrap;
+      }
+
+      .badge-ongoing {
+        background: rgba(0, 255, 135, 0.15);
+        color: var(--accent);
+      }
+      .badge-completed {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--muted);
+      }
+      .badge-upcoming {
+        background: rgba(255, 154, 60, 0.15);
+        color: var(--orange);
+      }
+
+      .actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* EMPTY / LOADING */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+      }
+
+      .empty-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+      .empty-text {
+        font-size: 13px;
+      }
+
+      .loading-row td {
+        text-align: center;
+        padding: 40px;
+        color: var(--muted);
+        font-family: "Fira Code", monospace;
+        font-size: 12px;
+      }
+
+      /* MODAL */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+      }
+
+      .overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal {
+        background: var(--card);
+        border: 1px solid var(--border);
+        width: 100%;
+        max-width: 560px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: translateY(16px);
+        transition: transform 0.25s;
+      }
+
+      .overlay.open .modal {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 1;
+      }
+
+      .modal-title {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-family: "Fira Code", monospace;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 20px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 2px;
+        transition: color 0.2s;
+      }
+
+      .modal-close:hover {
+        color: var(--red);
+      }
+
+      .modal-body {
+        padding: 22px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .form-full {
+        grid-column: 1 / -1;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .form-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: "Fira Code", monospace;
+      }
+
+      .form-input {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 9px 13px;
+        font-family: "Syne", sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 100%;
+      }
+
+      .form-input:focus {
+        border-color: var(--accent);
+      }
+      textarea.form-input {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .modal-footer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 22px;
+        border-top: 1px solid var(--border);
+        justify-content: flex-end;
+      }
+
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 12px 18px;
+        font-size: 13px;
+        z-index: 999;
+        max-width: 300px;
+        transform: translateY(60px);
+        opacity: 0;
+        transition: all 0.3s;
+        font-family: "Fira Code", monospace;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.ok {
+        border-left: 3px solid var(--accent);
+      }
+      .toast.err {
+        border-left: 3px solid var(--red);
+      }
+
+      /* CONFIRM */
+      .confirm-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        width: 100%;
+        max-width: 360px;
+        padding: 28px;
+        text-align: center;
+      }
+
+      .confirm-icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+      }
+      .confirm-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .confirm-msg {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      /* PAGINATION */
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--muted);
+        font-family: "Fira Code", monospace;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .page-btns {
+        display: flex;
+        gap: 4px;
+      }
+
+      .page-btn {
+        width: 30px;
+        height: 30px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-family: "Fira Code", monospace;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .page-btn:hover,
+      .page-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #000;
+      }
+      .page-btn:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+
+      /* SIDEBAR OVERLAY */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 49;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar-overlay.open {
+          display: block;
+        }
+        .main {
+          margin-left: 0;
+        }
+        .hamburger {
+          display: flex;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .search-box {
+          width: 100%;
+        }
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .toolbar-left {
+          flex-direction: column;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .actions {
+          flex-wrap: wrap;
+        }
+        .topbar-title {
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .content {
+          padding: 16px;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div id="loginScreen">
+      <div class="login-box">
+        <div class="login-logo">Admin Panel</div>
+        <h1 class="login-title">MASUK<br /><span>ADMIN</span></h1>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="admin@email.com" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="••••••••"
+            onkeydown="if (event.key === 'Enter') doLogin();"
+          />
+        </div>
+        <div class="login-err" id="loginErr">
+          ⚠ Email atau password salah, atau bukan admin.
+        </div>
+        <button class="btn-login" onclick="doLogin()">LOGIN →</button>
+      </div>
+    </div>
+
+    <!-- APP -->
+    <div id="app">
+      <!-- SIDEBAR OVERLAY -->
+      <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+        onclick="closeSidebar()"
+      ></div>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-text">Admin Panel</div>
+          <div class="sidebar-logo-title">🎌 Anime DB</div>
+        </div>
+        <div class="sidebar-user">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div>
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role">👑 ADMIN</div>
+          </div>
+        </div>
+        <nav>
+          <div class="nav-label">Menu</div>
+          <div class="nav-item active" onclick="showSection('dashboard')">
+            <span class="nav-icon">📊</span> Dashboard
+          </div>
+          <div class="nav-item" onclick="showSection('anime')">
+            <span class="nav-icon">🎬</span> Anime
+          </div>
+          <div class="nav-item" onclick="showSection('episodes')">
+            <span class="nav-icon">▶️</span> Episode
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="btn-logout" onclick="doLogout()">↩ LOGOUT</button>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-left">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="topbar-title" id="topbarTitle">Dashboard</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- DASHBOARD -->
+          <div class="section active" id="sec-dashboard">
+            <div class="stats-grid">
+              <div class="stat-card c1">
+                <div class="stat-val" id="statTotal">–</div>
+                <div class="stat-label">Total Anime</div>
+              </div>
+              <div class="stat-card c2">
+                <div class="stat-val" id="statOngoing">–</div>
+                <div class="stat-label">Ongoing</div>
+              </div>
+              <div class="stat-card c3">
+                <div class="stat-val" id="statCompleted">–</div>
+                <div class="stat-label">Completed</div>
+              </div>
+              <div class="stat-card c4">
+                <div class="stat-val" id="statEpisodes">–</div>
+                <div class="stat-label">Episodes</div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Anime Terbaru</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboardTable">
+                  <tr class="loading-row">
+                    <td colspan="4">⏳ memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ANIME -->
+          <div class="section" id="sec-anime">
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <input
+                  type="text"
+                  class="search-box"
+                  id="animeSearch"
+                  placeholder="🔍 Cari judul anime..."
+                  oninput="debounce(loadAnime, 500)()"
+                />
+                <select
+                  class="search-box"
+                  id="animeStatusFilter"
+                  onchange="loadAnime()"
+                >
+                  <option value="">Semua Status</option>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="completed">Completed</option>
+                  <option value="upcoming">Upcoming</option>
+                </select>
+              </div>
+              <button class="btn btn-accent" onclick="openAnimeModal()">
+                + Tambah Anime
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Anime</th>
+                    <th>Score</th>
+                    <th>Tahun</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="animeTable">
+                  <tr class="loading-row">
+                    <td colspan="5">⏳ memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                class="pagination"
+                id="animePagination"
+                style="display: none"
+              >
+                <span id="animePageInfo">–</span>
+                <div class="page-btns" id="animePageBtns"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EPISODES -->
+          <div class="section" id="sec-episodes">
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <select
+                  class="search-box"
+                  id="epAnimeSelect"
+                  onchange="loadEpisodes()"
+                  style="width: 260px"
+                >
+                  <option value="">— Pilih Anime —</option>
+                </select>
+              </div>
+              <button
+                class="btn btn-accent"
+                onclick="openEpModal()"
+                id="addEpBtn"
+                disabled
+              >
+                + Tambah Episode
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Judul Episode</th>
+                    <th>Kualitas</th>
+                    <th>Embed URL</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="episodeTable">
+                  <tr class="loading-row">
+                    <td colspan="5" style="color: var(--muted)">
+                      Pilih anime terlebih dahulu
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- /content -->
+      </div>
+      <!-- /main -->
+    </div>
+    <!-- /app -->
+
+    <!-- MODAL ANIME -->
+    <div class="overlay" id="animeOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="animeModalTitle">TAMBAH ANIME</div>
+          <button class="modal-close" onclick="closeOverlay('animeOverlay')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="animeId" />
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label class="form-label">Judul Anime *</label>
+              <input
+                type="text"
+                class="form-input"
+                id="animeTitle"
+                placeholder="Contoh: Your Name"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Score (0–10)</label>
+              <input
+                type="number"
+                class="form-input"
+                id="animeScore"
+                placeholder="9.2"
+                step="0.1"
+                min="0"
+                max="10"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tahun</label>
+              <input
+                type="number"
+                class="form-input"
+                id="animeYear"
+                placeholder="2016"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Episode</label>
+              <input
+                type="number"
+                class="form-input"
+                id="animeEpisodes"
+                placeholder="1"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-input" id="animeStatus">
+                <option value="completed">Completed</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="upcoming">Upcoming</option>
+              </select>
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Studio</label>
+              <input
+                type="text"
+                class="form-input"
+                id="animeStudio"
+                placeholder="Contoh: MAPPA"
+              />
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Genre (pisah koma)</label>
+              <input
+                type="text"
+                class="form-input"
+                id="animeGenre"
+                placeholder="Romance, Drama, Supernatural"
+              />
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Poster URL</label>
+              <input
+                type="text"
+                class="form-input"
+                id="animePoster"
+                placeholder="https://..."
+              />
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Synopsis</label>
+              <textarea
+                class="form-input"
+                id="animeSynopsis"
+                placeholder="Cerita singkat..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeOverlay('animeOverlay')">
+            Batal
+          </button>
+          <button class="btn btn-accent" onclick="saveAnime()">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL EPISODE -->
+    <div class="overlay" id="epOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="epModalTitle">TAMBAH EPISODE</div>
+          <button class="modal-close" onclick="closeOverlay('epOverlay')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="epId" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nomor Episode *</label>
+              <input
+                type="number"
+                class="form-input"
+                id="epNumber"
+                placeholder="1"
+                min="1"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kualitas</label>
+              <select class="form-input" id="epQuality">
+                <option value="1080p">1080p</option>
+                <option value="720p">720p</option>
+                <option value="480p" selected>480p</option>
+                <option value="360p">360p</option>
+              </select>
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Judul Episode</label>
+              <input
+                type="text"
+                class="form-input"
+                id="epTitle"
+                placeholder="Contoh: Your Name — Full Movie"
+              />
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Embed URL *</label>
+              <input
+                type="text"
+                class="form-input"
+                id="epEmbed"
+                placeholder="https://www.youtube.com/embed/xxxxx"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeOverlay('epOverlay')">
+            Batal
+          </button>
+          <button class="btn btn-accent" onclick="saveEpisode()">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI -->
+    <div class="overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <div class="confirm-icon">🗑️</div>
+        <div class="confirm-title">Yakin mau hapus?</div>
+        <div class="confirm-msg" id="confirmMsg">
+          Data yang dihapus tidak bisa dikembalikan.
+        </div>
+        <div class="confirm-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="closeOverlay('confirmOverlay')"
+          >
+            Batal
+          </button>
+          <button class="btn btn-danger" id="confirmOk">Hapus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+      // ⚠️ GANTI DENGAN URL API KAMU
+      const API = "https://api-anime-six-pi.vercel.app";
+
+      let token = localStorage.getItem("adminToken");
+      let user = JSON.parse(localStorage.getItem("adminUser") || "null");
+      let animePage = 1;
+      let animeList = []; // cache for episode dropdown
+
+      // =====================
+      // BOOT
+      // =====================
+      window.onload = () => {
+        if (token && user?.role === "admin") bootApp();
+      };
+
+      function bootApp() {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("app").classList.add("show");
+        document.getElementById("userName").textContent = user.username;
+        document.getElementById("userAvatar").textContent =
+          user.username[0].toUpperCase();
+        loadDashboard();
+        loadAnime();
+        loadAnimeDropdown();
+      }
+
+      // =====================
+      // LOGIN / LOGOUT
+      // =====================
+      async function doLogin() {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const errEl = document.getElementById("loginErr");
+        errEl.style.display = "none";
+
+        if (!email || !password) {
+          errEl.textContent = "⚠ Email dan password wajib diisi.";
+          errEl.style.display = "block";
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+
+          if (data.success && data.user.role === "admin") {
+            token = data.token;
+            user = data.user;
+            localStorage.setItem("adminToken", token);
+            localStorage.setItem("adminUser", JSON.stringify(user));
+            bootApp();
+          } else {
+            errEl.textContent =
+              data.user?.role !== "admin"
+                ? "⚠ Akun ini bukan admin."
+                : "⚠ " + (data.message || "Login gagal.");
+            errEl.style.display = "block";
+          }
+        } catch {
+          errEl.textContent = "⚠ Gagal koneksi ke server.";
+          errEl.style.display = "block";
+        }
+      }
+
+      function doLogout() {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminUser");
+        token = null;
+        user = null;
+        document.getElementById("loginScreen").style.display = "flex";
+        document.getElementById("app").classList.remove("show");
+      }
+
+      // =====================
+      // NAVIGATION
+      // =====================
+      function showSection(name) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        document.getElementById("sec-" + name).classList.add("active");
+        event.currentTarget.classList.add("active");
+        const titles = {
+          dashboard: "Dashboard",
+          anime: "Manajemen Anime",
+          episodes: "Manajemen Episode",
+        };
+        document.getElementById("topbarTitle").textContent = titles[name];
+        closeSidebar();
+      }
+
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+        document.getElementById("sidebarOverlay").classList.toggle("open");
+      }
+
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("open");
+      }
+
+      // =====================
+      // DASHBOARD
+      // =====================
+      async function loadDashboard() {
+        try {
+          const [all, ongoing, completed] = await Promise.all([
+            fetch(`${API}/api/anime?limit=5&sort=-createdAt`).then((r) =>
+              r.json(),
+            ),
+            fetch(`${API}/api/anime?status=ongoing&limit=1`).then((r) =>
+              r.json(),
+            ),
+            fetch(`${API}/api/anime?status=completed&limit=1`).then((r) =>
+              r.json(),
+            ),
+          ]);
+
+          document.getElementById("statTotal").textContent = all.total || 0;
+          document.getElementById("statOngoing").textContent =
+            ongoing.total || 0;
+          document.getElementById("statCompleted").textContent =
+            completed.total || 0;
+
+          // Count total episodes across first page
+          let epCount = 0;
+          if (all.data?.length) {
+            for (const a of all.data.slice(0, 3)) {
+              try {
+                const ep = await fetch(
+                  `${API}/api/episodes/anime/${a._id}`,
+                ).then((r) => r.json());
+                epCount += ep.total || 0;
+              } catch {}
+            }
+          }
+          document.getElementById("statEpisodes").textContent = epCount + "+";
+
+          const tbody = document.getElementById("dashboardTable");
+          if (!all.data?.length) {
+            tbody.innerHTML = `<tr class="loading-row"><td colspan="4">Belum ada data</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = all.data
+            .map(
+              (a) => `
+        <tr>
+          <td>
+            <div class="anime-row-info">
+              <div class="td-poster">${a.poster?.url ? `<img src="${a.poster.url}" alt="">` : "🎌"}</div>
+              <div>
+                <div class="anime-row-title">${a.title}</div>
+                <div class="anime-row-meta">${a.studio || "–"} · ${a.year || "–"}</div>
+              </div>
+            </div>
+          </td>
+          <td><b style="color:var(--yellow)">★ ${a.score || "–"}</b></td>
+          <td><span class="badge badge-${a.status}">${a.status}</span></td>
+          <td class="actions">
+            <button class="btn btn-ghost btn-sm" onclick="openAnimeModal(${JSON.stringify(a).replace(/"/g, "&quot;")})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDelete('anime','${a._id}','${a.title}')">Hapus</button>
+          </td>
+        </tr>`,
+            )
+            .join("");
+        } catch {
+          toast("Gagal memuat dashboard", "err");
+        }
+      }
+
+      // =====================
+      // ANIME CRUD
+      // =====================
+      async function loadAnime(page = 1) {
+        animePage = page;
+        const search = document.getElementById("animeSearch").value;
+        const status = document.getElementById("animeStatusFilter").value;
+        let url = `${API}/api/anime?page=${page}&limit=10&sort=-createdAt`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (status) url += `&status=${status}`;
+
+        document.getElementById("animeTable").innerHTML =
+          `<tr class="loading-row"><td colspan="5">⏳ memuat...</td></tr>`;
+
+        try {
+          const data = await fetch(url).then((r) => r.json());
+          renderAnimeTable(data.data || []);
+          renderAnimePagination(data.page, data.totalPages, data.total);
+        } catch {
+          toast("Gagal memuat anime", "err");
+        }
+      }
+
+      function renderAnimeTable(animes) {
+        const tbody = document.getElementById("animeTable");
+        if (!animes.length) {
+          tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎌</div><div class="empty-text">Tidak ada anime</div></div></td></tr>`;
+          return;
+        }
+        tbody.innerHTML = animes
+          .map(
+            (a) => `
+      <tr>
+        <td>
+          <div class="anime-row-info">
+            <div class="td-poster">${a.poster?.url ? `<img src="${a.poster.url}" alt="">` : "🎌"}</div>
+            <div>
+              <div class="anime-row-title">${a.title}</div>
+              <div class="anime-row-meta">${(a.genre || []).slice(0, 2).join(", ") || "–"}</div>
+            </div>
+          </div>
+        </td>
+        <td><b style="color:var(--yellow)">★ ${a.score || "–"}</b></td>
+        <td>${a.year || "–"}</td>
+        <td><span class="badge badge-${a.status}">${a.status}</span></td>
+        <td class="actions">
+          <button class="btn btn-blue btn-sm" onclick="showSection('episodes');selectAnime('${a._id}')">Ep</button>
+          <button class="btn btn-ghost btn-sm" onclick="openAnimeModal(${JSON.stringify(a).replace(/"/g, "&quot;")})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('anime','${a._id}','${a.title}')">Hapus</button>
+        </td>
+      </tr>`,
+          )
+          .join("");
+      }
+
+      function renderAnimePagination(page, totalPages, total) {
+        const pg = document.getElementById("animePagination");
+        if (!totalPages || totalPages <= 1) {
+          pg.style.display = "none";
+          return;
+        }
+        pg.style.display = "flex";
+        document.getElementById("animePageInfo").textContent =
+          `${total} anime · hal ${page}/${totalPages}`;
+        let btns = `<button class="page-btn" onclick="loadAnime(${page - 1})" ${page === 1 ? "disabled" : ""}>‹</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || Math.abs(i - page) <= 1)
+            btns += `<button class="page-btn ${i === page ? "active" : ""}" onclick="loadAnime(${i})">${i}</button>`;
+          else if (Math.abs(i - page) === 2)
+            btns += `<span style="color:var(--muted);padding:0 4px">…</span>`;
+        }
+        btns += `<button class="page-btn" onclick="loadAnime(${page + 1})" ${page === totalPages ? "disabled" : ""}>›</button>`;
+        document.getElementById("animePageBtns").innerHTML = btns;
+      }
+
+      function openAnimeModal(anime = null) {
+        const isEdit = !!anime;
+        document.getElementById("animeModalTitle").textContent = isEdit
+          ? "EDIT ANIME"
+          : "TAMBAH ANIME";
+        document.getElementById("animeId").value = anime?._id || "";
+        document.getElementById("animeTitle").value = anime?.title || "";
+        document.getElementById("animeScore").value = anime?.score || "";
+        document.getElementById("animeYear").value = anime?.year || "";
+        document.getElementById("animeEpisodes").value = anime?.episodes || "";
+        document.getElementById("animeStatus").value =
+          anime?.status || "completed";
+        document.getElementById("animeStudio").value = anime?.studio || "";
+        document.getElementById("animeGenre").value = (anime?.genre || []).join(
+          ", ",
+        );
+        document.getElementById("animePoster").value = anime?.poster?.url || "";
+        document.getElementById("animeSynopsis").value = anime?.synopsis || "";
+        openOverlay("animeOverlay");
+      }
+
+      async function saveAnime() {
+        const id = document.getElementById("animeId").value;
+        const posterUrl = document.getElementById("animePoster").value;
+
+        const body = {
+          title: document.getElementById("animeTitle").value.trim(),
+          score:
+            Number(document.getElementById("animeScore").value) || undefined,
+          year: Number(document.getElementById("animeYear").value) || undefined,
+          episodes:
+            Number(document.getElementById("animeEpisodes").value) || undefined,
+          status: document.getElementById("animeStatus").value,
+          studio: document.getElementById("animeStudio").value,
+          genre: document
+            .getElementById("animeGenre")
+            .value.split(",")
+            .map((g) => g.trim())
+            .filter(Boolean),
+          synopsis: document.getElementById("animeSynopsis").value,
+        };
+
+        if (!body.title) {
+          toast("Judul wajib diisi", "err");
+          return;
+        }
+        if (posterUrl) body.poster = { url: posterUrl };
+
+        try {
+          const res = await fetch(
+            id ? `${API}/api/anime/${id}` : `${API}/api/anime`,
+            {
+              method: id ? "PUT" : "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(body),
+            },
+          );
+          const data = await res.json();
+          if (data.success) {
+            closeOverlay("animeOverlay");
+            toast(id ? "Anime diupdate ✓" : "Anime ditambahkan ✓", "ok");
+            loadAnime(animePage);
+            loadDashboard();
+            loadAnimeDropdown();
+          } else {
+            toast(data.message, "err");
+          }
+        } catch {
+          toast("Gagal menyimpan", "err");
+        }
+      }
+
+      // =====================
+      // EPISODE CRUD
+      // =====================
+      async function loadAnimeDropdown() {
+        try {
+          const data = await fetch(
+            `${API}/api/anime?limit=100&sort=title`,
+          ).then((r) => r.json());
+          animeList = data.data || [];
+          const sel = document.getElementById("epAnimeSelect");
+          sel.innerHTML =
+            `<option value="">— Pilih Anime —</option>` +
+            animeList
+              .map((a) => `<option value="${a._id}">${a.title}</option>`)
+              .join("");
+        } catch {}
+      }
+
+      async function loadEpisodes() {
+        const animeId = document.getElementById("epAnimeSelect").value;
+        const addBtn = document.getElementById("addEpBtn");
+        addBtn.disabled = !animeId;
+
+        if (!animeId) {
+          document.getElementById("episodeTable").innerHTML =
+            `<tr class="loading-row"><td colspan="5" style="color:var(--muted)">Pilih anime terlebih dahulu</td></tr>`;
+          return;
+        }
+
+        document.getElementById("episodeTable").innerHTML =
+          `<tr class="loading-row"><td colspan="5">⏳ memuat...</td></tr>`;
+
+        try {
+          const data = await fetch(`${API}/api/episodes/anime/${animeId}`).then(
+            (r) => r.json(),
+          );
+          renderEpisodeTable(data.data || []);
+        } catch {
+          toast("Gagal memuat episode", "err");
+        }
+      }
+
+      function renderEpisodeTable(eps) {
+        const tbody = document.getElementById("episodeTable");
+        if (!eps.length) {
+          tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">▶️</div><div class="empty-text">Belum ada episode</div></div></td></tr>`;
+          return;
+        }
+        tbody.innerHTML = eps
+          .map(
+            (ep) => `
+      <tr>
+        <td><b style="color:var(--accent2);font-family:'Fira Code',monospace">${ep.episode_number}</b></td>
+        <td>${ep.title || `Episode ${ep.episode_number}`}</td>
+        <td><span class="badge" style="background:rgba(96,239,255,.1);color:var(--accent2)">${ep.quality}</span></td>
+        <td style="font-family:'Fira Code',monospace;font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ep.embed_url}</td>
+        <td class="actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEpModal(${JSON.stringify(ep).replace(/"/g, "&quot;")})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('episode','${ep._id}','Episode ${ep.episode_number}')">Hapus</button>
+        </td>
+      </tr>`,
+          )
+          .join("");
+      }
+
+      function selectAnime(id) {
+        document.getElementById("epAnimeSelect").value = id;
+        loadEpisodes();
+        document
+          .querySelector(".nav-item:nth-child(3)")
+          .classList.add("active");
+      }
+
+      function openEpModal(ep = null) {
+        const isEdit = !!ep;
+        document.getElementById("epModalTitle").textContent = isEdit
+          ? "EDIT EPISODE"
+          : "TAMBAH EPISODE";
+        document.getElementById("epId").value = ep?._id || "";
+        document.getElementById("epNumber").value = ep?.episode_number || "";
+        document.getElementById("epTitle").value = ep?.title || "";
+        document.getElementById("epEmbed").value = ep?.embed_url || "";
+        document.getElementById("epQuality").value = ep?.quality || "480p";
+        openOverlay("epOverlay");
+      }
+
+      async function saveEpisode() {
+        const id = document.getElementById("epId").value;
+        const animeId = document.getElementById("epAnimeSelect").value;
+
+        const body = {
+          anime_id: animeId,
+          episode_number: Number(document.getElementById("epNumber").value),
+          title: document.getElementById("epTitle").value.trim(),
+          embed_url: document.getElementById("epEmbed").value.trim(),
+          quality: document.getElementById("epQuality").value,
+        };
+
+        if (!body.episode_number) {
+          toast("Nomor episode wajib diisi", "err");
+          return;
+        }
+        if (!body.embed_url) {
+          toast("Embed URL wajib diisi", "err");
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            id ? `${API}/api/episodes/${id}` : `${API}/api/episodes`,
+            {
+              method: id ? "PUT" : "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(body),
+            },
+          );
+          const data = await res.json();
+          if (data.success) {
+            closeOverlay("epOverlay");
+            toast(id ? "Episode diupdate ✓" : "Episode ditambahkan ✓", "ok");
+            loadEpisodes();
+          } else {
+            toast(data.message, "err");
+          }
+        } catch {
+          toast("Gagal menyimpan episode", "err");
+        }
+      }
+
+      // =====================
+      // DELETE
+      // =====================
+      function confirmDelete(type, id, name) {
+        document.getElementById("confirmMsg").textContent =
+          `Hapus "${name}"? Data tidak bisa dikembalikan.`;
+        openOverlay("confirmOverlay");
+        document.getElementById("confirmOk").onclick = () => {
+          closeOverlay("confirmOverlay");
+          type === "anime" ? deleteAnime(id) : deleteEpisode(id);
+        };
+      }
+
+      async function deleteAnime(id) {
+        try {
+          const res = await fetch(`${API}/api/anime/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            toast("Anime dihapus", "ok");
+            loadAnime(animePage);
+            loadDashboard();
+            loadAnimeDropdown();
+          } else toast(data.message, "err");
+        } catch {
+          toast("Gagal menghapus", "err");
+        }
+      }
+
+      async function deleteEpisode(id) {
+        try {
+          const res = await fetch(`${API}/api/episodes/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            toast("Episode dihapus", "ok");
+            loadEpisodes();
+          } else toast(data.message, "err");
+        } catch {
+          toast("Gagal menghapus", "err");
+        }
+      }
+
+      // =====================
+      // HELPERS
+      // =====================
+      function openOverlay(id) {
+        document.getElementById(id).classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+      function closeOverlay(id) {
+        document.getElementById(id).classList.remove("open");
+        document.body.style.overflow = "";
+      }
+
+      document.querySelectorAll(".overlay").forEach((o) =>
+        o.addEventListener("click", function (e) {
+          if (e.target === this) closeOverlay(this.id);
+        }),
+      );
+
+      function toast(msg, type = "ok") {
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.className = `toast ${type} show`;
+        setTimeout(() => el.classList.remove("show"), 3000);
+      }
+
+      function debounce(fn, delay) {
+        let t;
+        return (...args) => {
+          clearTimeout(t);
+          t = setTimeout(() => fn(...args), delay);
+        };
+      }
+    </script>
+  </body>
+</html>
